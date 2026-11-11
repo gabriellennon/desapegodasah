@@ -145,20 +145,14 @@ em {
   border-bottom: 1px solid var(--border);
 }
 .wordmark {
-  display: inline-flex;
-  flex-direction: column;
-  font-family: var(--font-editorial), Georgia, serif;
-  font-size: 26px;
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 0.82;
+  display: block;
+  flex: none;
+  width: 132px;
 }
-.wordmark > span {
-  font-size: 38px;
-  letter-spacing: -0.06em;
-}
-.wordmark-dot {
-  color: #a86a79;
+.wordmark img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .site-header nav {
   display: flex;
@@ -642,21 +636,20 @@ h2 {
   align-items: center;
   max-width: 1000px;
 }
-.about-mark {
-  font-family: var(--font-editorial), Georgia, serif;
-  font-size: 155px;
-  letter-spacing: -0.09em;
-  line-height: 1;
-  text-align: center;
-  position: relative;
+.about-portrait {
+  width: min(100%, 312px);
+  justify-self: center;
+  padding: 6px;
+  border: 1px solid var(--espresso);
+  border-radius: 48% 48% 4px 4px / 34% 34% 4px 4px;
+  background: var(--off-white);
+  box-shadow: 7px 7px 0 rgb(62 39 35 / 14%);
 }
-.about-mark span {
-  display: inline-block;
-  font-family: var(--font-body), sans-serif;
-  font-size: 75px;
-  font-weight: 300;
-  margin-left: 10px;
-  transform: translateY(-18px);
+.about-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
 }
 .about-inner h2 {
   font-size: 38px;
@@ -684,10 +677,7 @@ h2 {
   gap: 25px;
 }
 .site-footer .wordmark {
-  font-size: 19px;
-}
-.site-footer .wordmark > span {
-  font-size: 29px;
+  width: 104px;
 }
 .site-footer p {
   font-family: var(--font-editorial), Georgia, serif;
@@ -768,9 +758,6 @@ h2 {
   .about-inner {
     gap: 30px;
   }
-  .about-mark {
-    font-size: 120px;
-  }
 }
 @media (max-width: 650px) {
   .container {
@@ -784,10 +771,7 @@ h2 {
     min-height: 88px;
   }
   .wordmark {
-    font-size: 22px;
-  }
-  .wordmark > span {
-    font-size: 33px;
+    width: 96px;
   }
   .site-header nav {
     margin-left: 0;
@@ -962,8 +946,9 @@ h2 {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  .about-mark {
-    display: none;
+  .about-portrait {
+    width: min(100%, 232px);
+    margin-bottom: 10px;
   }
   .about-inner h2 {
     font-size: 34px;

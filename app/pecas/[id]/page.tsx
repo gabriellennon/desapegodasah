@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import localFont from "next/font/local"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, Check, ChevronRight } from "lucide-react"
@@ -9,6 +10,12 @@ import {
 } from "@/components/store/product-interactions"
 import { formatPrice } from "@/lib/catalog"
 import { getCatalog } from "@/lib/catalog-source"
+
+const productTitleFont = localFont({
+  src: "../../../public/fonts/castoro.ttf",
+  weight: "400",
+  display: "swap",
+})
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -63,7 +70,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
             <h1
               id="product-title"
-              className="mt-4! mb-3! text-[clamp(2.65rem,5vw,4.25rem)]!"
+              className={`${productTitleFont.className} mt-4! mb-3! text-[clamp(2.65rem,5vw,4.25rem)]!`}
             >
               {product.name}
             </h1>

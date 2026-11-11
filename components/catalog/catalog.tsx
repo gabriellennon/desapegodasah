@@ -321,8 +321,14 @@ export function Catalog({
 
         <section className="about-section" id="sobre">
           <div className="about-inner container">
-            <div className="about-mark" aria-hidden="true">
-              sah<span>✳</span>
+            <div className="about-portrait">
+              <Image
+                src="https://emanubucketimages.uk/desapegodasah/catalogo/samara_profile.jpg"
+                alt="Retrato de Samara Viau sorrindo"
+                width={1060}
+                height={1060}
+                sizes="(max-width: 650px) 232px, 312px"
+              />
             </div>
             <div>
               <p className="eyebrow">DESAPEGAR TAMBÉM É CUIDAR</p>

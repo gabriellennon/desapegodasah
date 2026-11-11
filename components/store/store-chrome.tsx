@@ -1,5 +1,20 @@
+import Image from "next/image"
 import Link from "next/link"
-import { ArrowUpRight, Camera } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
+
+function StoreLogo() {
+  return (
+    <Link className="wordmark" href="/" aria-label="Desapego da Sah, início">
+      <Image
+        src="https://emanubucketimages.uk/desapegodasah/desapego_logo_sah.png"
+        alt="Logo Desapego da Samara"
+        width={487}
+        height={365}
+        sizes="(max-width: 650px) 96px, 132px"
+      />
+    </Link>
+  )
+}
 
 export function StoreHeader({
   catalog = false,
@@ -16,16 +31,7 @@ export function StoreHeader({
         </div>
       )}
       <header className="site-header container">
-        <Link
-          className="wordmark"
-          href="/"
-          aria-label="Desapego da Sah, início"
-        >
-          desapego
-          <span>
-            da sah<span className="wordmark-dot">.</span>
-          </span>
-        </Link>
+        <StoreLogo />
         <nav aria-label="Navegação principal">
           <Link className={catalog ? "nav-active" : undefined} href="/#pecas">
             As peças
@@ -39,7 +45,7 @@ export function StoreHeader({
           target="_blank"
           rel="noreferrer"
         >
-          <Camera size={18} />
+          <Image src="/images/instagram.png" alt="" width={18} height={18} />
           <span>@samaraviau</span>
           <ArrowUpRight size={14} />
         </a>
@@ -51,9 +57,7 @@ export function StoreHeader({
 export function StoreFooter() {
   return (
     <footer className="site-footer container">
-      <Link className="wordmark" href="/">
-        desapego<span>da sah.</span>
-      </Link>
+      <StoreLogo />
       <p>Peças que seguem. Histórias que ficam.</p>
       <span>© {new Date().getFullYear()} Desapego da Sah</span>
     </footer>
