@@ -194,10 +194,6 @@ em {
   align-items: center;
   gap: 10px;
 }
-.tiny-flower {
-  font-size: 23px;
-  font-weight: 400;
-}
 h1 {
   margin: 15px 0 18px;
   font-size: clamp(42px, 4.7vw, 68px);
@@ -283,12 +279,18 @@ h1 {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   transform: rotate(9deg);
   text-align: center;
   font-family: var(--font-editorial), Georgia, serif;
-  font-size: 19px;
-  line-height: 1;
+  font-size: 16px;
+  line-height: 1.1;
+}
+.collage-stamp svg {
+  flex: none;
+}
+.collage-stamp span {
+  white-space: nowrap;
 }
 .collage-caption {
   position: absolute;
@@ -310,10 +312,6 @@ h1 {
   font-size: 10px;
   letter-spacing: 0.15em;
   font-weight: 500;
-}
-.brand-ribbon span:nth-child(even) {
-  font-size: 21px;
-  line-height: 1;
 }
 .catalog-section {
   padding-top: 53px;
@@ -599,10 +597,6 @@ h2 {
   justify-content: center;
   padding-block: 45px 49px;
 }
-.catalog-end span {
-  font-size: 20px;
-  color: #a16877;
-}
 .catalog-end p {
   font-size: 11px;
   color: var(--muted-foreground);
@@ -741,7 +735,7 @@ h2 {
   .collage-stamp {
     width: 100px;
     height: 100px;
-    font-size: 17px;
+    font-size: 13px;
   }
   .hero-collage {
     height: 300px;
@@ -824,15 +818,15 @@ h2 {
     right: 50px;
   }
   .collage-stamp {
-    width: 85px;
-    height: 85px;
+    width: 96px;
+    height: 96px;
     right: 5px;
     bottom: 0;
-    font-size: 15px;
     gap: 4px;
   }
   .collage-stamp svg {
-    width: 17px;
+    width: 16px;
+    height: 16px;
   }
   .collage-caption {
     top: 8px;

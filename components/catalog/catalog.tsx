@@ -30,6 +30,19 @@ const normalize = (value: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
 
+function AsteriskMark() {
+  return (
+    <Image
+      src="/images/asterisk-espresso.png"
+      alt=""
+      width={18}
+      height={18}
+      className="shrink-0"
+      unoptimized
+    />
+  )
+}
+
 function ProductCard({ product, index }: { product: Product; index: number }) {
   return (
     <article className={`product-card ${product.sold ? "is-sold" : ""}`}>
@@ -126,9 +139,7 @@ export function Catalog({
         <section className="hero container" aria-labelledby="hero-title">
           <div className="hero-copy">
             <p className="eyebrow">
-              <span className="tiny-flower" aria-hidden="true">
-                ✳
-              </span>{" "}
+              <AsteriskMark />
               DO MEU CLOSET PARA O SEU
             </p>
             <h1 id="hero-title">
@@ -175,11 +186,11 @@ export function Catalog({
 
         <div className="brand-ribbon">
           <span>MENOS ACÚMULO</span>
-          <span aria-hidden="true">✳</span>
+          <AsteriskMark />
           <span>MAIS HISTÓRIAS</span>
-          <span aria-hidden="true">✳</span>
+          <AsteriskMark />
           <span>UM NOVO OLHAR PARA O QUE JÁ EXISTE</span>
-          <span aria-hidden="true">✳</span>
+          <AsteriskMark />
           <span>MAIS HISTÓRIAS</span>
         </div>
 
@@ -313,15 +324,15 @@ export function Catalog({
             </div>
           )}
           <div className="catalog-end">
-            <span aria-hidden="true">✳</span>
+            <AsteriskMark />
             <p>Todo fim de ciclo pode ser um lindo começo.</p>
-            <span aria-hidden="true">✳</span>
+            <AsteriskMark />
           </div>
         </section>
 
         <section className="about-section" id="sobre">
           <div className="about-inner container">
-            <div className="about-portrait">
+            <div className="about-portrait hidden md:block">
               <Image
                 src="https://emanubucketimages.uk/desapegodasah/catalogo/samara_profile.jpg"
                 alt="Retrato de Samara Viau sorrindo"
