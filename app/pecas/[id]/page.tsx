@@ -7,16 +7,14 @@ import {
   ProductActions,
   ProductGallery,
 } from "@/components/store/product-interactions"
-import { formatPrice, products } from "@/lib/catalog"
+import { formatPrice } from "@/lib/catalog"
+import { getCatalog } from "@/lib/catalog-source"
 
 type Props = { params: Promise<{ id: string }> }
 
-export function generateStaticParams() {
-  return products.map(({ id }) => ({ id }))
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
+  const { products } = await getCatalog()
   const product = products.find((item) => item.id === id)
   if (!product) return {}
   return {
@@ -27,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params
+  const { products, demo } = await getCatalog()
   const product = products.find((item) => item.id === id)
   if (!product) notFound()
 
@@ -35,7 +34,7 @@ export default async function ProductPage({ params }: Props) {
       <a className="skip-link" href="#produto">
         Ir para os detalhes
       </a>
-      <StoreHeader />
+      <StoreHeader demo={demo} />
       <main id="produto" className="container pb-16 sm:pb-24">
         <nav
           aria-label="Caminho da página"
@@ -52,12 +51,10 @@ export default async function ProductPage({ params }: Props) {
           </span>
         </nav>
         <div className="grid items-start gap-8 md:grid-cols-[minmax(0,1.14fr)_minmax(0,1fr)] md:gap-12 lg:gap-[clamp(48px,7vw,104px)]">
-          <ProductGallery product={product} />
+          <ProductGallery product={product} demo={demo} />
           <section aria-labelledby="product-title" className="min-w-0 md:pt-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="eyebrow">
-                {product.category} · Peça {product.id}
-              </p>
+              <p className="eyebrow">{product.category}</p>
               <span
                 className={`px-2.5 py-1.5 text-[11px] ${product.sold ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"}`}
               >
@@ -82,7 +79,7 @@ export default async function ProductPage({ params }: Props) {
             <p className="mb-6 max-w-prose text-sm leading-7 text-muted-foreground">
               {product.description}
             </p>
-            <ProductActions product={product} />
+            <ProductActions product={product} products={products} />
             <section
               aria-labelledby="piece-details"
               className="mt-8 border-t border-border pt-6"

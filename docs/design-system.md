@@ -18,7 +18,7 @@ Cabeçalho, hero compacto, faixa de marca, navegação por categoria, busca, tam
 
 ## Dados e limites desta entrega
 
-Os oito produtos em `lib/catalog.ts` são exemplos sem relação com inventário real. Fotos do Unsplash são ilustrativas e ficam identificadas como demonstração. Cada peça tem página em `/pecas/[id]`. A galeria aceita fotos adicionais e oferece uma ampliação quando há só uma imagem. O carrinho demonstrativo fica no navegador e a ação Comprar agora abre um resumo. Checkout, pagamentos e integração com Supabase ficam para outra etapa. O metadado `robots` bloqueia indexação desta prévia; revisar antes do lançamento.
+Os oito produtos em `lib/catalog.ts` são exemplos sem relação com inventário real. Fotos do Unsplash são ilustrativas e ficam identificadas como demonstração. Cada peça tem página em `/pecas/[id]`. A galeria aceita fotos adicionais e oferece uma ampliação quando há só uma imagem. O carrinho demonstrativo fica no navegador e a ação Comprar agora abre um resumo. O catálogo consulta os produtos publicados no Supabase quando configurado. Checkout e pagamentos ficam para outra etapa. O metadado `robots` bloqueia indexação desta prévia; revisar antes do lançamento.
 
 Fotos baixadas de `https://images.unsplash.com/`:
 - trousers.jpg: photo-1594633312681-425c7b97ccd1

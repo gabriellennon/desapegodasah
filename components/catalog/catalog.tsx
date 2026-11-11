@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react"
 import { useState } from "react"
-import { formatPrice, products, type Product } from "@/lib/catalog"
+import { formatPrice, type Product } from "@/lib/catalog"
 
 import { StoreFooter, StoreHeader } from "@/components/store/store-chrome"
 
@@ -24,7 +24,6 @@ const categories = [
   "Calçados",
   "Acessórios",
 ]
-const sizes = ["Todos", "P", "M", "G", "37", "Único"]
 const normalize = (value: string) =>
   value
     .normalize("NFD")
@@ -42,7 +41,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
         <div className="product-image">
           <Image
             src={product.image}
-            alt={product.name + " — fotografia demonstrativa"}
+            alt={product.name}
             fill
             sizes="(max-width: 600px) 50vw, (max-width: 1000px) 33vw, 25vw"
             loading={index < 4 ? "eager" : "lazy"}
@@ -71,7 +70,14 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
   )
 }
 
-export function Catalog() {
+export function Catalog({
+  products,
+  demo,
+}: {
+  products: Product[]
+  demo: boolean
+}) {
+  const sizes = [...new Set(products.map((product) => product.size))]
   const [category, setCategory] = useState("Todas as peças")
   const [search, setSearch] = useState("")
   const [size, setSize] = useState("Todos")
@@ -101,7 +107,7 @@ export function Catalog() {
         ? a.price - b.price
         : sort === "price-desc"
           ? b.price - a.price
-          : a.id.localeCompare(b.id)
+          : 0
     )
   const hasFilters =
     category !== "Todas as peças" ||
@@ -114,7 +120,7 @@ export function Catalog() {
       <a className="skip-link" href="#pecas">
         Ir para o catálogo
       </a>
-      <StoreHeader catalog />
+      <StoreHeader catalog demo={demo} />
 
       <main>
         <section className="hero container" aria-labelledby="hero-title">
@@ -253,7 +259,7 @@ export function Catalog() {
             <fieldset>
               <legend>Tamanho</legend>
               <div className="size-options">
-                {sizes.map((item) => (
+                {["Todos", ...sizes].map((item) => (
                   <button
                     key={item}
                     aria-pressed={size === item}
@@ -285,7 +291,12 @@ export function Catalog() {
               </button>
             </div>
           )}
-          {filtered.length > 0 ? (
+          {products.length === 0 ? (
+            <div className="empty-state">
+              <h3>Nenhuma peça publicada por enquanto.</h3>
+              <p>Volte em breve para conferir os próximos desapegos.</p>
+            </div>
+          ) : filtered.length > 0 ? (
             <div className="product-grid">
               {filtered.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} />

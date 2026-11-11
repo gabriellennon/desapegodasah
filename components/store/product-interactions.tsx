@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import { Dialog } from "radix-ui"
 import { Button } from "@/components/ui/button"
-import { formatPrice, products, type Product } from "@/lib/catalog"
+import { formatPrice, type Product } from "@/lib/catalog"
 
 const cartKey = "desapego-da-sah:cart"
 const cartEvent = "desapego-da-sah:cart-change"
@@ -61,7 +61,13 @@ function saveCart(ids: string[]) {
   window.dispatchEvent(new Event(cartEvent))
 }
 
-export function ProductGallery({ product }: { product: Product }) {
+export function ProductGallery({
+  product,
+  demo,
+}: {
+  product: Product
+  demo: boolean
+}) {
   const [active, setActive] = useState(0)
   const photos = [
     { src: product.image, label: "Vista geral", zoom: false },
@@ -136,13 +142,20 @@ export function ProductGallery({ product }: { product: Product }) {
         ))}
       </div>
       <p className="mt-3 text-xs text-muted-foreground">
-        {current.label} · Fotografia demonstrativa
+        {current.label}
+        {demo && " · Fotografia demonstrativa"}
       </p>
     </section>
   )
 }
 
-export function ProductActions({ product }: { product: Product }) {
+export function ProductActions({
+  product,
+  products,
+}: {
+  product: Product
+  products: Product[]
+}) {
   const snapshot = useSyncExternalStore(
     subscribeCart,
     readCart,

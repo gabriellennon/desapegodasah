@@ -1,12 +1,20 @@
 import Link from "next/link"
 import { ArrowUpRight, Camera } from "lucide-react"
 
-export function StoreHeader({ catalog = false }: { catalog?: boolean }) {
+export function StoreHeader({
+  catalog = false,
+  demo = false,
+}: {
+  catalog?: boolean
+  demo?: boolean
+}) {
   return (
     <>
-      <div className="preview-notice">
-        Prévia do catálogo · Fotos, peças e valores demonstrativos
-      </div>
+      {demo && (
+        <div className="preview-notice">
+          Prévia do catálogo · Fotos, peças e valores demonstrativos
+        </div>
+      )}
       <header className="site-header container">
         <Link
           className="wordmark"
