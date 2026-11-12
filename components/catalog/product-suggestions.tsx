@@ -55,7 +55,7 @@ export function ProductSuggestions({ products }: { products: Product[] }) {
       <div className="mb-5 flex items-center justify-between gap-3 sm:mb-7">
         <h2
           id="product-suggestions-title"
-          className="text-[clamp(1.75rem,4vw,2.65rem)]!"
+          className="text-[clamp(1.75rem,4vw,2.65rem)] leading-[1.05] tracking-[-0.035em]"
         >
           Você também pode gostar
         </h2>
@@ -91,7 +91,7 @@ export function ProductSuggestions({ products }: { products: Product[] }) {
       <ul
         ref={track}
         id="product-suggestions-list"
-        className="grid snap-x snap-mandatory [scrollbar-width:none] auto-cols-[calc((100%_-_0.75rem)/2)] grid-flow-col gap-3 overflow-x-auto p-1 min-[651px]:auto-cols-[calc((100%_-_2rem)/3)] min-[651px]:gap-4 min-[1001px]:auto-cols-[calc((100%_-_3.75rem)/4)] min-[1001px]:gap-5"
+        className="grid snap-x snap-mandatory [scrollbar-width:none] auto-cols-[calc((100%_-_0.75rem)/2)] grid-flow-col gap-3 overflow-x-auto p-1 store-tablet:auto-cols-[calc((100%_-_2rem)/3)] store-tablet:gap-4 store-desktop:auto-cols-[calc((100%_-_3.75rem)/4)] store-desktop:gap-5"
       >
         {products.map((product) => (
           <li key={product.id} className="min-w-0 snap-start">

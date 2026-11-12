@@ -47,7 +47,7 @@ export default async function ProductPage({ params }: Props) {
         Ir para os detalhes
       </a>
       <StoreHeader demo={demo} />
-      <main id="produto" className="container pb-16 sm:pb-24">
+      <main id="produto" className="storefront-container pb-16 sm:pb-24">
         <nav
           aria-label="Caminho da página"
           className="flex flex-wrap items-center gap-x-2 gap-y-1 py-5 text-xs text-muted-foreground sm:py-7"
@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
             <h1
               id="product-title"
-              className={`${productTitleFont.className} mt-4! mb-3! text-[clamp(2.65rem,5vw,4.25rem)]!`}
+              className={`${productTitleFont.className} mt-4 mb-3 text-[clamp(2.65rem,5vw,4.25rem)] leading-[0.98] tracking-[-0.045em]`}
             >
               {product.name}
             </h1>
@@ -97,7 +97,10 @@ export default async function ProductPage({ params }: Props) {
               className="mt-8 border-t border-border pt-6"
             >
               <p className="eyebrow">De pertinho</p>
-              <h2 id="piece-details" className="mt-2 mb-4 text-3xl!">
+              <h2
+                id="piece-details"
+                className="mt-2 mb-4 text-3xl leading-[1.05] tracking-[-0.035em]"
+              >
                 Detalhes da peça
               </h2>
               <dl className="divide-y divide-border text-sm">
@@ -120,7 +123,7 @@ export default async function ProductPage({ params }: Props) {
             </section>
           </section>
         </div>
-        <Link href="/#pecas" className="text-link mt-10">
+        <Link href="/#pecas" className="storefront-link">
           <ArrowLeft size={16} aria-hidden="true" /> Voltar ao catálogo
         </Link>
         {suggestions.length > 0 && (

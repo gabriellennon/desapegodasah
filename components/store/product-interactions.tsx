@@ -82,7 +82,7 @@ export function ProductGallery({
 
   return (
     <section aria-label="Galeria do produto" className="min-w-0">
-      <div className="relative aspect-[4/5] overflow-hidden bg-[var(--surface)] sm:max-h-[70vh]">
+      <div className="relative aspect-[4/5] overflow-hidden bg-surface sm:max-h-[70vh]">
         <Image
           src={current.src}
           alt={`${product.name} · ${current.label}`}
@@ -407,7 +407,7 @@ function StoreActions({
                       variant={panel === "buy" ? "default" : "outline"}
                       className="h-11 w-full rounded-none"
                     >
-                      Continuar explorando
+                      Continuar comprando
                     </Button>
                   </Dialog.Close>
                 </div>
