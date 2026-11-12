@@ -3,10 +3,9 @@
   --frame-gap: clamp(7px, 1.4vw, 14px);
   --track-offset: 24px;
 
-  position: relative;
   max-width: 1440px;
   margin-inline: auto;
-  padding-bottom: 54px;
+  padding-bottom: 24px;
 }
 
 .viewport {
@@ -40,17 +39,6 @@
   object-fit: cover;
 }
 
-.carousel[data-paused="true"] .track {
-  animation-play-state: paused;
-}
-
-.controls {
-  position: absolute;
-  inset: auto 0 9px;
-  display: flex;
-  justify-content: flex-end;
-}
-
 @keyframes slide-left {
   from {
     transform: translateX(calc(-1 * var(--track-offset)));
@@ -61,12 +49,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .carousel {
-    padding-bottom: 24px;
-  }
-
-  .sequence:nth-child(2),
-  .controls {
+  .sequence:nth-child(2) {
     display: none;
   }
 }
