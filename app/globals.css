@@ -29,7 +29,7 @@
 }
 :root {
   --espresso: #3e2723;
-  --peony: #f4c9d6;
+  --peony: #f9ddda;
   --off-white: #f9f5ea;
   --background: var(--off-white);
   --foreground: var(--espresso);
@@ -246,6 +246,7 @@ h1 {
   position: absolute;
   overflow: hidden;
   background: var(--surface);
+  border: 7px solid #fffdf8;
 }
 .collage-frame img {
   object-fit: cover;
@@ -256,7 +257,6 @@ h1 {
   left: 20px;
   bottom: 6px;
   transform: rotate(-8deg);
-  border: 7px solid #fffdf8;
   box-shadow: 0 8px 22px #3e272312;
 }
 .collage-back {
@@ -265,7 +265,6 @@ h1 {
   right: 20px;
   top: 2px;
   transform: rotate(9deg);
-  border-radius: 120px 120px 0 0;
 }
 .collage-stamp {
   position: absolute;
@@ -804,12 +803,14 @@ h2 {
     max-width: 360px;
     justify-self: center;
   }
+  .collage-frame {
+    border-width: 5px;
+  }
   .collage-front {
     width: 135px;
     height: 165px;
     left: 43px;
     bottom: 0;
-    border-width: 5px;
   }
   .collage-back {
     width: 135px;

@@ -156,6 +156,20 @@ export function ProductActions({
   product: Product
   products: Product[]
 }) {
+  return <StoreActions product={product} products={products} />
+}
+
+export function CatalogCart({ products }: { products: Product[] }) {
+  return <StoreActions products={products} />
+}
+
+function StoreActions({
+  product,
+  products,
+}: {
+  product?: Product
+  products: Product[]
+}) {
   const snapshot = useSyncExternalStore(
     subscribeCart,
     readCart,
@@ -165,11 +179,13 @@ export function ProductActions({
   const cartProducts = products.filter(
     (item) => cart.includes(item.id) && !item.sold
   )
-  const [panel, setPanel] = useState<"cart" | "buy" | "share" | null>(null)
+  const [panel, setPanel] = useState<
+    "cart" | "checkout" | "buy" | "share" | null
+  >(null)
   const [shareUrl, setShareUrl] = useState("")
   const [feedback, setFeedback] = useState("")
   const returnFocus = useRef<HTMLElement | null>(null)
-  const items = panel === "buy" ? [product] : cartProducts
+  const items = panel === "buy" && product ? [product] : cartProducts
 
   function openPanel(next: NonNullable<typeof panel>) {
     returnFocus.current =
@@ -179,16 +195,16 @@ export function ProductActions({
     setPanel(next)
   }
 
-  function addToCart() {
-    saveCart([...new Set([...parseCart(readCart()), product.id])])
+  function addToCart(id: string) {
+    saveCart([...new Set([...parseCart(readCart()), id])])
     openPanel("cart")
   }
 
-  async function share() {
+  async function share(title: string) {
     const url = window.location.href
     if (navigator.share) {
       try {
-        await navigator.share({ title: product.name, url })
+        await navigator.share({ title, url })
         return
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return
@@ -205,47 +221,61 @@ export function ProductActions({
 
   return (
     <>
-      <div className="grid gap-2.5 sm:grid-cols-2">
+      {product ? (
+        <>
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 rounded-none border-primary px-3 text-xs hover:bg-secondary"
+              onClick={() => addToCart(product.id)}
+              disabled={product.sold}
+            >
+              <ShoppingBag /> Adicionar ao carrinho
+            </Button>
+            <Button
+              type="button"
+              className="h-12 rounded-none px-3 text-xs hover:bg-secondary hover:text-foreground"
+              onClick={() => openPanel("buy")}
+              disabled={product.sold}
+            >
+              Comprar agora <ArrowRight />
+            </Button>
+          </div>
+          <div className="mt-3 flex flex-wrap justify-between gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-11 px-2"
+              onClick={() => openPanel("cart")}
+              aria-haspopup="dialog"
+            >
+              <ShoppingBag /> Carrinho ({cartProducts.length})
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-11 px-2"
+              onClick={() => share(product.name)}
+            >
+              <Share2 /> Compartilhar
+            </Button>
+          </div>
+          <p aria-live="polite" className="text-xs text-muted-foreground">
+            {feedback}
+          </p>
+        </>
+      ) : cartProducts.length > 0 ? (
         <Button
           type="button"
-          variant="outline"
-          className="h-12 rounded-none border-primary px-3 text-xs hover:bg-secondary"
-          onClick={addToCart}
-          disabled={product.sold}
-        >
-          <ShoppingBag /> Adicionar ao carrinho
-        </Button>
-        <Button
-          type="button"
-          className="h-12 rounded-none px-3 text-xs hover:bg-secondary hover:text-foreground"
-          onClick={() => openPanel("buy")}
-          disabled={product.sold}
-        >
-          Comprar agora <ArrowRight />
-        </Button>
-      </div>
-      <div className="mt-3 flex flex-wrap justify-between gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-11 px-2"
+          className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30 h-12 gap-2 rounded-full px-4 text-sm shadow-lg sm:right-6"
           onClick={() => openPanel("cart")}
           aria-haspopup="dialog"
         >
-          <ShoppingBag /> Carrinho ({cartProducts.length})
+          <ShoppingBag aria-hidden="true" />
+          Carrinho ({cartProducts.length})
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-11 px-2"
-          onClick={share}
-        >
-          <Share2 /> Compartilhar
-        </Button>
-      </div>
-      <p aria-live="polite" className="text-xs text-muted-foreground">
-        {feedback}
-      </p>
+      ) : null}
       <Dialog.Root
         open={panel !== null}
         onOpenChange={(open) => {
@@ -278,7 +308,7 @@ export function ProductActions({
             <Dialog.Title className="mt-3 pr-12 font-heading text-4xl leading-none">
               {panel === "share"
                 ? "Compartilhar peça"
-                : panel === "buy"
+                : panel === "buy" || panel === "checkout"
                   ? "Resumo da compra"
                   : "Seu carrinho"}
             </Dialog.Title>
@@ -356,14 +386,31 @@ export function ProductActions({
                     </span>
                   </p>
                 )}
-                <Dialog.Close asChild>
-                  <Button
-                    type="button"
-                    className="mt-6 h-11 w-full rounded-none"
-                  >
-                    Continuar explorando
-                  </Button>
-                </Dialog.Close>
+                <div className="mt-6 grid gap-2.5">
+                  {(panel === "cart" || panel === "checkout") && (
+                    <Button
+                      type="button"
+                      className="h-11 w-full rounded-none"
+                      disabled={panel === "cart" && items.length === 0}
+                      onClick={() =>
+                        setPanel(panel === "cart" ? "checkout" : "cart")
+                      }
+                    >
+                      {panel === "cart"
+                        ? "Finalizar compra"
+                        : "Voltar ao carrinho"}
+                    </Button>
+                  )}
+                  <Dialog.Close asChild>
+                    <Button
+                      type="button"
+                      variant={panel === "buy" ? "default" : "outline"}
+                      className="h-11 w-full rounded-none"
+                    >
+                      Continuar explorando
+                    </Button>
+                  </Dialog.Close>
+                </div>
               </>
             )}
           </Dialog.Content>

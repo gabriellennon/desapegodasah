@@ -4,7 +4,7 @@ Referência navegável: `/design-system`. Catálogo: `/`.
 
 ## Identidade
 
-Paleta definida pelo usuário: espresso `#3E2723`, peony `#F4C9D6`, off-white `#F9F5EA`. Espresso para conteúdo e ações; off-white para fundo; peony para superfícies e detalhes. Tokens em `app/globals.css` controlam a identidade. Tons auxiliares de borda e texto secundário derivam dessa base. Não usar rosa claro como texto sobre creme.
+Paleta definida pelo usuário: espresso `#3E2723`, peony `#f9ddda`, off-white `#F9F5EA`. Espresso para conteúdo e ações; off-white para fundo; peony para superfícies e detalhes. Tokens em `app/globals.css` controlam a identidade. Tons auxiliares de borda e texto secundário derivam dessa base. Não usar rosa claro como texto sobre creme.
 
 Cormorant Garamond nos títulos; DM Sans na interface. Arquivos locais em `public/fonts`, acompanhados das licenças OFL. Escala de espaçamento base: 4, 8, 12, 16, 24, 32, 48, 64 pixels. Botões principais com altura mínima de 46px. Cards sem caixas decorativas, imagens 3:4 e informações fora da foto. Vitrine com 4 colunas no desktop, 3 no tablet e 2 no celular.
 

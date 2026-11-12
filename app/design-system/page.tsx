@@ -32,7 +32,7 @@ export default function DesignSystem() {
             },
             {
               name: "Peony",
-              hex: "#F4C9D6",
+              hex: "#f9ddda",
               use: "Destaques, selos e superfícies",
               light: false,
             },

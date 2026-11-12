@@ -9,11 +9,11 @@ import {
   ChevronDown,
   Search,
   SlidersHorizontal,
-  Sparkles,
   X,
 } from "lucide-react"
 import { useState } from "react"
 import { formatPrice, type Product } from "@/lib/catalog"
+import { CatalogCart } from "@/components/store/product-interactions"
 
 import { StoreFooter, StoreHeader } from "@/components/store/store-chrome"
 
@@ -35,8 +35,8 @@ function AsteriskMark() {
     <Image
       src="/images/asterisk-espresso.png"
       alt=""
-      width={18}
-      height={18}
+      width={14}
+      height={14}
       className="shrink-0"
       unoptimized
     />
@@ -139,7 +139,6 @@ export function Catalog({
         <section className="hero container" aria-labelledby="hero-title">
           <div className="hero-copy">
             <p className="eyebrow">
-              <AsteriskMark />
               DO MEU CLOSET PARA O SEU
             </p>
             <h1 id="hero-title">
@@ -170,17 +169,6 @@ export function Catalog({
                 preload
               />
             </div>
-            <div className="collage-stamp">
-              <Sparkles size={22} strokeWidth={1.2} />
-              <span>
-                Novas histórias,
-                <br />
-                mesmas paixões.
-              </span>
-            </div>
-            <span className="collage-caption">
-              O especial merece continuar.
-            </span>
           </div>
         </section>
 
@@ -324,9 +312,7 @@ export function Catalog({
             </div>
           )}
           <div className="catalog-end">
-            <AsteriskMark />
             <p>Todo fim de ciclo pode ser um lindo começo.</p>
-            <AsteriskMark />
           </div>
         </section>
 
@@ -366,6 +352,7 @@ export function Catalog({
         </section>
       </main>
       <StoreFooter />
+      <CatalogCart products={products} />
     </>
   )
 }
