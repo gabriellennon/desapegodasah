@@ -5,7 +5,7 @@ const MIN_FRAMES = 6
 export function ClosetCarousel({ photos }: { photos: string[] }) {
   if (!photos.length) return null
 
-  // Each copy of the track must fill the viewport, even for a small drop.
+  // The remaining two copies cover the viewport after one copy scrolls past.
   const frameCount = Math.max(MIN_FRAMES, photos.length)
   const frames = Array.from(
     { length: frameCount },
@@ -13,12 +13,12 @@ export function ClosetCarousel({ photos }: { photos: string[] }) {
   )
 
   return (
-    <div className="mx-auto max-w-[1440px] pb-6 [--frame-gap:clamp(7px,1.4vw,14px)] [--frame-width:clamp(92px,26vw,248px)]">
+    <div className="w-full pb-6 [--frame-gap:clamp(7px,1.4vw,14px)] [--frame-width:clamp(92px,26vw,max(248px,8.5vw))]">
       <div className="overflow-hidden" aria-hidden="true">
         <div className="flex w-max motion-safe:animate-closet-scroll">
-          {[0, 1].map((copy) => (
+          {[0, 1, 2].map((copy) => (
             <div
-              className={`flex w-max gap-(--frame-gap) pe-(--frame-gap) ${copy === 1 ? "motion-reduce:hidden" : ""}`}
+              className="flex w-max gap-(--frame-gap) pe-(--frame-gap)"
               key={copy}
             >
               {frames.map((src, index) => (
@@ -31,7 +31,7 @@ export function ClosetCarousel({ photos }: { photos: string[] }) {
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="(max-width: 353px) 92px, (max-width: 953px) 26vw, 248px"
+                    sizes="(max-width: 353px) 92px, (max-width: 953px) 26vw, max(248px, 8.5vw)"
                     loading={copy === 0 && index < 4 ? "eager" : "lazy"}
                   />
                 </div>

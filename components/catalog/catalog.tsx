@@ -30,13 +30,13 @@ const normalize = (value: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
 
-function AsteriskMark() {
+function ClothesHangerMark() {
   return (
     <Image
-      src="/images/asterisk-espresso.png"
+      src="/images/clothes_Hanger.png"
       alt=""
-      width={14}
-      height={14}
+      width={16}
+      height={16}
       className="shrink-0"
       unoptimized
     />
@@ -100,11 +100,11 @@ export function Catalog({
 
         <div className="flex items-center gap-[25px] overflow-hidden bg-secondary px-5 py-3 text-[8px] font-medium tracking-[0.15em] whitespace-nowrap store-tablet:justify-center store-tablet:gap-[55px] store-tablet:py-[15px] store-tablet:text-[10px]">
           <span>MENOS ACÚMULO</span>
-          <AsteriskMark />
+          <ClothesHangerMark />
           <span>MAIS HISTÓRIAS</span>
-          <AsteriskMark />
+          <ClothesHangerMark />
           <span>UM NOVO OLHAR PARA O QUE JÁ EXISTE</span>
-          <AsteriskMark />
+          <ClothesHangerMark />
           <span>MAIS HISTÓRIAS</span>
         </div>
 
@@ -283,7 +283,7 @@ export function Catalog({
           className="bg-secondary py-[35px] store-tablet:py-[53px]"
           id="sobre"
         >
-          <div className="storefront-container grid max-w-[1000px] items-center gap-5 store-tablet:grid-cols-[0.75fr_1fr] store-tablet:gap-[30px] store-desktop:gap-[70px]">
+          <div className="storefront-container grid max-w-[1000px] items-center gap-5 store-tablet:grid-cols-[0.75fr_1fr] store-tablet:gap-[30px] store-desktop:block store-desktop:text-center">
             <div>
               <p className="eyebrow">DESAPEGAR TAMBÉM É CUIDAR</p>
               <h2 className="mt-3 mb-[17px] text-[34px] leading-[1.05] tracking-[-0.035em] store-tablet:text-[38px]">
@@ -291,7 +291,7 @@ export function Catalog({
                 <br />
                 pode ser especial <em>por aí.</em>
               </h2>
-              <p className="max-w-[440px] text-xs leading-[1.9]">
+              <p className="max-w-[440px] text-xs leading-[1.9] store-desktop:mx-auto">
                 Um espaço para dar continuidade às histórias das peças do closet
                 da Samara. Roupas e acessórios que seguem em frente, abrindo
                 espaço para o novo.

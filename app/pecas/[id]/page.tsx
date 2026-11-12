@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: Props) {
             </div>
             <h1
               id="product-title"
-              className={`${productTitleFont.className} mt-4 mb-3 text-[clamp(2.65rem,5vw,4.25rem)] leading-[0.98] tracking-[-0.045em]`}
+              className={`${productTitleFont.className} mt-4 mb-3 text-[35px] leading-[0.98] tracking-[-0.045em]`}
             >
               {product.name}
             </h1>

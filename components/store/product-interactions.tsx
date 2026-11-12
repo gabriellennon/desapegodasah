@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useRef, useState, useSyncExternalStore } from "react"
 import {
   ArrowRight,
@@ -334,24 +335,33 @@ function StoreActions({
                         key={item.id}
                         className="flex items-center gap-3 py-4"
                       >
-                        <div className="relative h-16 w-12 shrink-0 overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt=""
-                            fill
-                            sizes="48px"
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium">{item.name}</p>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            Tam. {item.size}
-                          </p>
-                          <p className="mt-1 text-sm">
-                            {formatPrice(item.price)}
-                          </p>
-                        </div>
+                        <Link
+                          href={`/pecas/${item.id}`}
+                          prefetch={false}
+                          onNavigate={() => setPanel(null)}
+                          className="group flex min-w-0 flex-1 items-center gap-3"
+                        >
+                          <div className="relative h-16 w-12 shrink-0 overflow-hidden">
+                            <Image
+                              src={item.image}
+                              alt=""
+                              fill
+                              sizes="48px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-heading text-xl leading-tight wrap-break-word group-hover:underline group-hover:underline-offset-4">
+                              {item.name}
+                            </p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Tam. {item.size}
+                            </p>
+                            <p className="mt-1 text-sm">
+                              {formatPrice(item.price)}
+                            </p>
+                          </div>
+                        </Link>
                         {panel === "cart" && (
                           <Button
                             type="button"
