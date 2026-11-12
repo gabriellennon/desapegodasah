@@ -182,17 +182,10 @@ em {
   font-size: 11px;
 }
 .hero {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 32px;
-  align-items: center;
-  padding-block: 48px 52px;
-  min-height: 405px;
+  padding-block: clamp(28px, 6vw, 64px) clamp(24px, 5vw, 44px);
 }
 .hero .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  text-transform: uppercase;
 }
 h1 {
   margin: 15px 0 18px;
@@ -201,8 +194,9 @@ h1 {
   letter-spacing: -0.045em;
 }
 .hero-description {
-  font-size: 13px;
-  line-height: 1.85;
+  max-width: 38ch;
+  font-size: clamp(13px, 2.9vw, 18px);
+  line-height: 1.65;
   color: var(--muted-foreground);
 }
 .primary-button {
@@ -225,79 +219,21 @@ h1 {
   background: var(--peony);
   color: var(--espresso);
 }
+.hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px clamp(14px, 4vw, 28px);
+  margin-top: clamp(20px, 5vw, 34px);
+}
 .hero .primary-button {
-  margin-top: 23px;
+  font-size: clamp(11px, 2.5vw, 15px);
 }
 .hero-signature {
   font-family: var(--font-editorial), Georgia, serif;
-  font-size: 23px;
+  font-size: clamp(20px, 5vw, 32px);
   font-style: italic;
-  margin-left: 22px;
   white-space: nowrap;
-}
-.hero-collage {
-  position: relative;
-  height: 315px;
-  max-width: 460px;
-  width: 100%;
-  justify-self: end;
-}
-.collage-frame {
-  position: absolute;
-  overflow: hidden;
-  background: var(--surface);
-  border: 7px solid #fffdf8;
-}
-.collage-frame img {
-  object-fit: cover;
-}
-.collage-front {
-  width: 205px;
-  height: 280px;
-  left: 20px;
-  bottom: 6px;
-  transform: rotate(-8deg);
-  box-shadow: 0 8px 22px #3e272312;
-}
-.collage-back {
-  width: 205px;
-  height: 270px;
-  right: 20px;
-  top: 2px;
-  transform: rotate(9deg);
-}
-.collage-stamp {
-  position: absolute;
-  right: 0;
-  bottom: 8px;
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  background: var(--peony);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 6px;
-  transform: rotate(9deg);
-  text-align: center;
-  font-family: var(--font-editorial), Georgia, serif;
-  font-size: 16px;
-  line-height: 1.1;
-}
-.collage-stamp svg {
-  flex: none;
-}
-.collage-stamp span {
-  white-space: nowrap;
-}
-.collage-caption {
-  position: absolute;
-  top: 1px;
-  left: 3px;
-  font-size: 9px;
-  letter-spacing: 0.06em;
-  transform: rotate(-8deg);
 }
 .brand-ribbon {
   background: var(--peony);
@@ -703,44 +639,9 @@ h2 {
     gap: 0;
   }
 }
-@media (min-width: 1500px) {
-  .hero {
-    min-height: 460px;
-  }
-}
 @media (max-width: 1000px) {
   .container {
     width: calc(100% - 56px);
-  }
-  .hero {
-    grid-template-columns: 1.2fr 1fr;
-    gap: 12px;
-  }
-  .hero-signature {
-    display: block;
-    margin: 14px 0 0;
-  }
-  .collage-front {
-    width: 165px;
-    height: 245px;
-    left: 10px;
-  }
-  .collage-back {
-    width: 165px;
-    height: 235px;
-    right: 8px;
-    top: 25px;
-  }
-  .collage-stamp {
-    width: 100px;
-    height: 100px;
-    font-size: 13px;
-  }
-  .hero-collage {
-    height: 300px;
-  }
-  .collage-caption {
-    top: 20px;
   }
   .product-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -775,66 +676,16 @@ h2 {
   .social-link > svg:last-child {
     display: none;
   }
-  .hero {
-    padding-block: 32px 30px;
-    grid-template-columns: 1fr;
-    min-height: 0;
-    gap: 25px;
-  }
   h1 {
     font-size: clamp(43px, 10vw, 62px);
     margin-top: 13px;
   }
-  .hero-description {
-    font-size: 12px;
-  }
-  .hero-signature {
-    display: inline-block;
-    margin: 0 0 0 14px;
-    font-size: 20px;
+  .hero h1 {
+    font-size: clamp(38px, 9vw, 62px);
   }
   .hero .primary-button {
-    font-size: 10px;
     padding-inline: 14px;
     gap: 13px;
-  }
-  .hero-collage {
-    height: 175px;
-    max-width: 360px;
-    justify-self: center;
-  }
-  .collage-frame {
-    border-width: 5px;
-  }
-  .collage-front {
-    width: 135px;
-    height: 165px;
-    left: 43px;
-    bottom: 0;
-  }
-  .collage-back {
-    width: 135px;
-    height: 165px;
-    top: 0;
-    right: 50px;
-  }
-  .collage-stamp {
-    width: 96px;
-    height: 96px;
-    right: 5px;
-    bottom: 0;
-    gap: 4px;
-  }
-  .collage-stamp svg {
-    width: 16px;
-    height: 16px;
-  }
-  .collage-caption {
-    top: 8px;
-    left: 8px;
-    font-size: 7px;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
   }
   .brand-ribbon {
     justify-content: start;

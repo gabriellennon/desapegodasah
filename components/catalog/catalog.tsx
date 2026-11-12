@@ -2,7 +2,6 @@
 
 import Image from "next/image"
 import {
-  ArrowDown,
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
@@ -12,6 +11,7 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import type { Product } from "@/lib/catalog"
+import { CatalogHero } from "@/components/catalog/catalog-hero"
 import { ProductCard } from "@/components/catalog/product-card"
 import { CatalogCart } from "@/components/store/product-interactions"
 
@@ -96,39 +96,7 @@ export function Catalog({
       <StoreHeader catalog demo={demo} />
 
       <main>
-        <section className="hero container" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <p className="eyebrow">DO MEU CLOSET PARA O SEU</p>
-            <h1 id="hero-title">
-              Peças com história.
-              <br />
-              Um novo <em>começo.</em>
-            </h1>
-            <p className="hero-description">
-              Roupas e acessórios do closet da Samara Viau,
-              <br className="desktop-break" /> prontos para fazer parte da sua
-              história.
-            </p>
-            <a className="primary-button" href="#pecas">
-              Encontre sua próxima peça <ArrowDown size={17} />
-            </a>
-            <span className="hero-signature">com carinho, Sah</span>
-          </div>
-          <div className="hero-collage" aria-hidden="true">
-            <div className="collage-frame collage-back">
-              <Image src="/images/bag.jpg" alt="" fill sizes="240px" />
-            </div>
-            <div className="collage-frame collage-front">
-              <Image
-                src="/images/trousers.jpg"
-                alt=""
-                fill
-                sizes="280px"
-                preload
-              />
-            </div>
-          </div>
-        </section>
+        <CatalogHero products={products} />
 
         <div className="brand-ribbon">
           <span>MENOS ACÚMULO</span>
