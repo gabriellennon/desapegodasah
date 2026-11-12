@@ -3,6 +3,7 @@ import localFont from "next/font/local"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, Check, ChevronRight } from "lucide-react"
+import { ProductSuggestions } from "@/components/catalog/product-suggestions"
 import { StoreFooter, StoreHeader } from "@/components/store/store-chrome"
 import {
   ProductActions,
@@ -35,6 +36,10 @@ export default async function ProductPage({ params }: Props) {
   const { products, demo } = await getCatalog()
   const product = products.find((item) => item.id === id)
   if (!product) notFound()
+
+  const suggestions = products.filter(
+    (item) => item.id !== product.id && !item.sold
+  )
 
   return (
     <>
@@ -118,6 +123,9 @@ export default async function ProductPage({ params }: Props) {
         <Link href="/#pecas" className="text-link mt-10">
           <ArrowLeft size={16} aria-hidden="true" /> Voltar ao catálogo
         </Link>
+        {suggestions.length > 0 && (
+          <ProductSuggestions key={product.id} products={suggestions} />
+        )}
       </main>
       <StoreFooter />
     </>

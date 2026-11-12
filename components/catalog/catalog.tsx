@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import {
   ArrowDown,
   ArrowRight,
@@ -12,7 +11,8 @@ import {
   X,
 } from "lucide-react"
 import { useState } from "react"
-import { formatPrice, type Product } from "@/lib/catalog"
+import type { Product } from "@/lib/catalog"
+import { ProductCard } from "@/components/catalog/product-card"
 import { CatalogCart } from "@/components/store/product-interactions"
 
 import { StoreFooter, StoreHeader } from "@/components/store/store-chrome"
@@ -40,46 +40,6 @@ function AsteriskMark() {
       className="shrink-0"
       unoptimized
     />
-  )
-}
-
-function ProductCard({ product, index }: { product: Product; index: number }) {
-  return (
-    <article className={`product-card ${product.sold ? "is-sold" : ""}`}>
-      <Link
-        className="product-link"
-        href={`/pecas/${product.id}`}
-        aria-label={`Ver detalhes de ${product.name}${product.sold ? ", esgotado" : ""}`}
-      >
-        <div className="product-image">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 600px) 50vw, (max-width: 1000px) 33vw, 25vw"
-            loading={index < 4 ? "eager" : "lazy"}
-          />
-          <span className={`product-tag ${product.sold ? "tag-sold" : ""}`}>
-            {product.sold
-              ? "Já encontrou um lar"
-              : product.condition.includes("leves")
-                ? "Com história"
-                : "Bem conservada"}
-          </span>
-          <span className="product-peek">
-            Ver de pertinho <ArrowUpRight size={16} />
-          </span>
-        </div>
-        <div className="product-caption">
-          <span>{product.category}</span>
-          <span className="size-tag">
-            {product.size === "Único" ? "Tam. único" : `Tam. ${product.size}`}
-          </span>
-        </div>
-        <h3>{product.name}</h3>
-        <p className="product-price">{formatPrice(product.price)}</p>
-      </Link>
-    </article>
   )
 }
 
@@ -138,9 +98,7 @@ export function Catalog({
       <main>
         <section className="hero container" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">
-              DO MEU CLOSET PARA O SEU
-            </p>
+            <p className="eyebrow">DO MEU CLOSET PARA O SEU</p>
             <h1 id="hero-title">
               Peças com história.
               <br />
@@ -298,7 +256,11 @@ export function Catalog({
           ) : filtered.length > 0 ? (
             <div className="product-grid">
               {filtered.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  eager={index < 4}
+                />
               ))}
             </div>
           ) : (
