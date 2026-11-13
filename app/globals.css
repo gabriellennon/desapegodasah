@@ -47,6 +47,25 @@
   --breakpoint-store-desktop: 62.5625rem;
   --animate-closet-scroll: closet-scroll 42s linear infinite;
 
+  --animate-checkout-heart: checkout-heart 4.4s ease-out both;
+
+  @keyframes checkout-heart {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0) rotate(-12deg) scale(0.7);
+    }
+    18% {
+      opacity: 0.95;
+    }
+    68% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(var(--heart-drift), -92dvh, 0) rotate(18deg) scale(1.15);
+    }
+  }
+
   @keyframes closet-scroll {
     from {
       transform: translateX(-24px);

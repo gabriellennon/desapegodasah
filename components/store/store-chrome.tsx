@@ -3,12 +3,12 @@ import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-function StoreLogo({ footer = false }: { footer?: boolean }) {
+export function StoreLogo({ footer = false }: { footer?: boolean }) {
   return (
     <Link
       className={cn(
         "block flex-none",
-        footer ? "w-[104px]" : "w-24 store-tablet:w-[132px]"
+        footer ? "w-[104px]" : "w-[72px] store-tablet:w-[96px]"
       )}
       href="/"
       aria-label="Desapego da Sah, início"
@@ -19,7 +19,7 @@ function StoreLogo({ footer = false }: { footer?: boolean }) {
         width={487}
         height={365}
         className="h-auto w-full"
-        sizes={footer ? "104px" : "(max-width: 650px) 96px, 132px"}
+        sizes={footer ? "104px" : "(max-width: 650px) 72px, 96px"}
       />
     </Link>
   )
@@ -39,11 +39,11 @@ export function StoreHeader({
           Prévia do catálogo · Fotos, peças e valores demonstrativos
         </div>
       )}
-      <header className="storefront-container flex min-h-[88px] items-center justify-between border-b border-border store-tablet:min-h-[110px]">
+      <header className="storefront-container flex min-h-[76px] items-center justify-between gap-2 border-b border-border store-tablet:min-h-[88px]">
         <StoreLogo />
         <nav
           aria-label="Navegação principal"
-          className="flex gap-[18px] text-[11px] store-tablet:ml-[45px] store-tablet:gap-9 store-tablet:text-xs"
+          className="flex items-center gap-2.5 text-[11px] whitespace-nowrap store-tablet:gap-7 store-tablet:text-xs"
         >
           <Link
             className="relative py-3 aria-[current=page]:after:absolute aria-[current=page]:after:inset-x-0 aria-[current=page]:after:bottom-[3px] aria-[current=page]:after:h-0.5 aria-[current=page]:after:bg-primary"
@@ -54,6 +54,9 @@ export function StoreHeader({
           </Link>
           <Link className="py-3" href="/#sobre">
             O desapego
+          </Link>
+          <Link className="py-3" href="/pedidos">
+            Meus pedidos
           </Link>
         </nav>
         <a

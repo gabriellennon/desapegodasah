@@ -2,7 +2,7 @@
 
 Desapego da Sah is Samara Viau's resale storefront for clothing and accessories from her personal wardrobe. She can share the catalog when a new drop is ready, and shoppers can browse on their phones, inspect each item, and put several pieces in their cart. Most listings represent a single piece. The product model also supports multiple units without displaying the exact quantity to shoppers.
 
-The storefront is written in Brazilian Portuguese and displays prices in Brazilian reais (BRL). The current release supports a live catalog and a browser-based cart. Checkout, shipping quotes, payments, and order management are planned.
+The storefront is written in Brazilian Portuguese and displays prices in Brazilian reais (BRL). The storefront includes a live catalog, a browser-based cart, and a guest checkout with AbacatePay and Melhor Envio integrations. Checkout requires the provider configuration described below.
 
 ## What works today
 
@@ -12,7 +12,7 @@ The storefront is written in Brazilian Portuguese and displays prices in Brazili
 - **Product publishing** through Supabase Table Editor. Drafts stay out of the storefront and published items with zero stock appear as sold out.
 - **Design system** preview at `/design-system`, covering the storefront palette, type, and interface components.
 
-**Buy now** currently opens a single-item summary. Cart actions do not create an order or reserve stock.
+**Buy now** opens checkout for a single piece. **Finalize purchase** opens checkout for the cart. The server reserves stock when the shopper submits a payment.
 
 ## Technology stack
 
@@ -21,6 +21,7 @@ The storefront is written in Brazilian Portuguese and displays prices in Brazili
 | Application | Next.js 16 App Router, React 19, TypeScript 5 |
 | UI | Tailwind CSS 4, shadcn/ui components, Radix UI dialogs, and Lucide icons |
 | Product data | Supabase Postgres and the Supabase Data API |
+| Checkout | AbacatePay API v2 and abacatepay.js, Melhor Envio shipping quotes, ViaCEP address lookup |
 | Images | Next.js Image, local assets, and approved public image URLs |
 | Fonts | Cormorant Garamond, DM Sans, and Castoro, served locally through `next/font` |
 | Tooling | npm, ESLint, Prettier, and TypeScript |
@@ -49,6 +50,9 @@ flowchart LR
 | --- | --- |
 | `app/page.tsx` | Storefront at `/` |
 | `app/pecas/[id]/page.tsx` | Product detail route. Missing or unpublished IDs return a 404 when Supabase is configured. |
+| `app/checkout/page.tsx` | Guest checkout at `/checkout` |
+| `app/api/checkout/` | Shipping quotes, payment creation, status, and reconciliation |
+| `app/api/webhooks/abacatepay/` | Signed payment and refund notifications |
 | `app/design-system/page.tsx` | Visual reference at `/design-system` |
 | `app/globals.css` | Design tokens and shared styles |
 | `components/catalog/` | Catalog layout, filters, and product cards |
@@ -151,10 +155,24 @@ The [product entry guide](docs/cadastro-de-produtos.md) has worked examples for 
 
 For deployment, set both Supabase variables in the hosting environment and use a host that supports the Next.js server runtime. The storefront currently asks search engines to skip indexing through the root metadata in [`app/layout.tsx`](app/layout.tsx). Review that setting when the site is ready to be indexed.
 
+## Checkout setup
+
+1. Apply the SQL migrations in `supabase/migrations`. For a new database, apply them in order. If the catalog table already exists, apply the remaining checkout migrations in order. The order number migration assigns existing orders a unique `DS-XXXX` reference. Fill in `shipping_weight_kg`, `shipping_width_cm`, `shipping_height_cm`, and `shipping_length_cm` for each piece available for shipping.
+2. Configure the checkout variables in [`.env.example`](.env.example). Set `SUPABASE_SERVICE_ROLE_KEY` to a server-side secret or service role key. Generate independent random values for the signing, webhook, and scheduler secrets with `openssl rand -hex 32`. Keep these values on the server.
+3. Configure the AbacatePay API key with `TRANSPARENT:CREATE` and `TRANSPARENT:READ`. Use the matching public checkout key for the embedded card form. Start with Dev Mode credentials and a separate test database. Set `CHECKOUT_MAX_INSTALLMENTS` to the store's limit between 1 and 12. The checkout also applies AbacatePay's R$ 10 minimum per installment.
+4. Configure the Melhor Envio token, the sender's eight-digit postal code, and the application User-Agent with a contact email. Match `MELHOR_ENVIO_SANDBOX` to the token's environment. The server keeps the original quote on the order and caps the shipping charge at R$ 50.
+5. Register the public HTTPS endpoint `/api/webhooks/abacatepay` in AbacatePay for `transparent.completed` and `transparent.refunded`. Use the same secret as `ABACATE_WEBHOOK_SECRET`.
+6. Schedule an authenticated GET to `/api/checkout/reconcile` every few minutes. Send `Authorization: Bearer <CHECKOUT_CRON_SECRET>`. This checks expired Pix charges even after a shopper closes the checkout. Stock is released when the provider confirms expiry or cancellation.
+
+The server signs shipping quotes, validates prices and availability when reserving stock, and stores the order and its items in a single database transaction. Card data goes to the provider's embedded form. The server receives a single-use token and never stores card numbers, CVV, or reusable card tokens. An ambiguous provider response keeps the order reserved for reconciliation. For an order stuck in `creating` or `review`, check AbacatePay before changing its status or returning stock.
+
+Before using production keys, test Pix creation and expiry, approved and declined cards, installments, webhook retries, and the last available unit. Use the provider's test tools to simulate a Pix payment. See [Pix creation](https://docs.abacatepay.com/pages/transparents/create), [card charges](https://docs.abacatepay.com/pages/transparents/card), [webhook security](https://docs.abacatepay.com/pages/notificacoes/seguranca), and [Melhor Envio shipping quotes](https://docs.melhorenvio.com.br/reference/calculo-de-fretes-por-produtos).
+
+### Browser hydration warnings
+
+If the hydration diff shows `cz-shortcut-listen` on `<body>`, disable the ColorZilla extension for the browser profile you use to test the store and reload the page. You can also use a clean browser profile with extensions disabled. See the [Next.js issue for the injected attribute](https://github.com/vercel/next.js/issues/72031).
+
 ## Planned functionality
 
-- **Guest checkout and inventory reservation.** Revalidate prices and availability on the server and reserve stock while payment is pending. Release expired reservations so that unique pieces can return to the catalog.
-- **Payments.** Evaluate AbacatePay for Pix and credit card payments, including installments. Confirm payment on the server before recording a purchase.
-- **Shipping.** Integrate Melhor Envio for shipping quotes by postal code. Samara plans to pack and post orders manually and register tracking codes.
 - **Order confirmation and tracking.** Send a confirmation email with a secure link so customers can follow a purchase without an account.
 - **Order administration.** Provide a restricted dashboard for paid and pending orders, carriers, and tracking codes. Product entry remains in Supabase Table Editor, and customer support is planned through WhatsApp Business.

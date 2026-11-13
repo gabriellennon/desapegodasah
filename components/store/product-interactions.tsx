@@ -15,52 +15,13 @@ import { Dialog } from "radix-ui"
 import { Button } from "@/components/ui/button"
 import { formatPrice, type Product } from "@/lib/catalog"
 
-const cartKey = "desapego-da-sah:cart"
-const cartEvent = "desapego-da-sah:cart-change"
-const emptyCart = "[]"
-let cartFallback = emptyCart
-
-function readCart() {
-  try {
-    return localStorage.getItem(cartKey) ?? emptyCart
-  } catch {
-    return cartFallback
-  }
-}
-
-function subscribeCart(update: () => void) {
-  window.addEventListener("storage", update)
-  window.addEventListener(cartEvent, update)
-  return () => {
-    window.removeEventListener("storage", update)
-    window.removeEventListener(cartEvent, update)
-  }
-}
-
-function parseCart(value: string): string[] {
-  try {
-    const parsed: unknown = JSON.parse(value)
-    return Array.isArray(parsed)
-      ? [
-          ...new Set(
-            parsed.filter((id): id is string => typeof id === "string")
-          ),
-        ]
-      : []
-  } catch {
-    return []
-  }
-}
-
-function saveCart(ids: string[]) {
-  cartFallback = JSON.stringify(ids)
-  try {
-    localStorage.setItem(cartKey, cartFallback)
-  } catch {
-    // Keep the preview usable in browsers that block storage.
-  }
-  window.dispatchEvent(new Event(cartEvent))
-}
+import {
+  emptyCart,
+  parseCart,
+  readCart,
+  saveCart,
+  subscribeCart,
+} from "@/lib/cart"
 
 export function ProductGallery({
   product,
@@ -180,13 +141,11 @@ function StoreActions({
   const cartProducts = products.filter(
     (item) => cart.includes(item.id) && !item.sold
   )
-  const [panel, setPanel] = useState<
-    "cart" | "checkout" | "buy" | "share" | null
-  >(null)
+  const [panel, setPanel] = useState<"cart" | "share" | null>(null)
   const [shareUrl, setShareUrl] = useState("")
   const [feedback, setFeedback] = useState("")
   const returnFocus = useRef<HTMLElement | null>(null)
-  const items = panel === "buy" && product ? [product] : cartProducts
+  const items = cartProducts
 
   function openPanel(next: NonNullable<typeof panel>) {
     returnFocus.current =
@@ -237,10 +196,21 @@ function StoreActions({
             <Button
               type="button"
               className="h-12 rounded-none px-3 text-xs hover:bg-secondary hover:text-foreground"
-              onClick={() => openPanel("buy")}
+              asChild={!product.sold}
               disabled={product.sold}
             >
-              Comprar agora <ArrowRight />
+              {product.sold ? (
+                <span>
+                  Comprar agora <ArrowRight />
+                </span>
+              ) : (
+                <Link
+                  href={`/checkout?peca=${encodeURIComponent(product.id)}`}
+                  prefetch={false}
+                >
+                  Comprar agora <ArrowRight />
+                </Link>
+              )}
             </Button>
           </div>
           <div className="mt-3 flex flex-wrap justify-between gap-2">
@@ -307,16 +277,12 @@ function StoreActions({
             </Dialog.Close>
             <p className="eyebrow">Desapego da Sah</p>
             <Dialog.Title className="mt-3 pr-12 font-heading text-4xl leading-none">
-              {panel === "share"
-                ? "Compartilhar peça"
-                : panel === "buy" || panel === "checkout"
-                  ? "Resumo da compra"
-                  : "Seu carrinho"}
+              {panel === "share" ? "Compartilhar peça" : "Seu carrinho"}
             </Dialog.Title>
             <Dialog.Description className="mt-3 text-sm leading-6 text-muted-foreground">
               {panel === "share"
                 ? "Selecione e copie o link da peça."
-                : "Prévia do catálogo. Os pagamentos serão disponibilizados depois."}
+                : "Confira suas peças antes de finalizar a compra."}
             </Dialog.Description>
             {panel === "share" ? (
               <input
@@ -397,24 +363,29 @@ function StoreActions({
                   </p>
                 )}
                 <div className="mt-6 grid gap-2.5">
-                  {(panel === "cart" || panel === "checkout") && (
+                  {items.length ? (
+                    <Button asChild className="h-11 w-full rounded-none">
+                      <Link
+                        href="/checkout"
+                        prefetch={false}
+                        onNavigate={() => setPanel(null)}
+                      >
+                        Finalizar compra
+                      </Link>
+                    </Button>
+                  ) : (
                     <Button
                       type="button"
                       className="h-11 w-full rounded-none"
-                      disabled={panel === "cart" && items.length === 0}
-                      onClick={() =>
-                        setPanel(panel === "cart" ? "checkout" : "cart")
-                      }
+                      disabled
                     >
-                      {panel === "cart"
-                        ? "Finalizar compra"
-                        : "Voltar ao carrinho"}
+                      Finalizar compra
                     </Button>
                   )}
                   <Dialog.Close asChild>
                     <Button
                       type="button"
-                      variant={panel === "buy" ? "default" : "outline"}
+                      variant="outline"
                       className="h-11 w-full rounded-none"
                     >
                       Continuar comprando
