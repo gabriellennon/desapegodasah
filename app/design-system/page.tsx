@@ -46,7 +46,7 @@ export default function DesignSystem() {
             },
             {
               name: "Off-white",
-              hex: "#F9F5EA",
+              hex: "#fbfaf7",
               use: "Fundo principal e respiro",
               light: false,
             },
@@ -56,7 +56,7 @@ export default function DesignSystem() {
               className="flex min-h-40 flex-col justify-end border border-border p-[25px] store-tablet:min-h-[200px]"
               style={{
                 background: color.hex,
-                color: color.light ? "#F9F5EA" : "#3E2723",
+                color: color.light ? "#fbfaf7" : "#3E2723",
               }}
             >
               <span className="font-heading text-[34px]">{color.name}</span>

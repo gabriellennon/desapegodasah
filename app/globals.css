@@ -31,7 +31,7 @@
 :root {
   --espresso: #3e2723;
   --peony: #f9ddda;
-  --off-white: #f9f5ea;
+  --off-white: #fbfaf7;
   --background: var(--off-white);
   --foreground: var(--espresso);
   --primary: var(--espresso);
