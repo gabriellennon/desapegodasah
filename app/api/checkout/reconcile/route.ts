@@ -7,6 +7,11 @@ import {
   safeEqual,
 } from "@/lib/checkout/server"
 
+import {
+  cleanExpiredLookups,
+  sendOrderConfirmations,
+} from "@/lib/orders/server"
+
 export async function GET(request: Request) {
   try {
     if (
@@ -34,7 +39,13 @@ export async function GET(request: Request) {
         if (order) await refreshPayment(order)
       })
     )
+    const [confirmation, cleanup] = await Promise.allSettled([
+      sendOrderConfirmations(),
+      cleanExpiredLookups(),
+    ])
     return Response.json({
+      confirmationFailed: confirmation.status === "rejected",
+      lookupCleanupFailed: cleanup.status === "rejected",
       checked: overdue.length,
       failed: results.filter((result) => result.status === "rejected").length,
     })

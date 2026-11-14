@@ -17,9 +17,9 @@ import {
   jsonBody,
   parseAddress,
   parseContact,
-  paymentView,
   verifyQuote,
 } from "@/lib/checkout/server"
+import { checkoutResponse } from "@/lib/orders/server"
 import { maxInstallments } from "@/lib/checkout/types"
 
 export async function POST(request: Request) {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const data = await jsonBody(request)
     const { id, access } = credentials(data)
     const existing = await getOrder(id, access)
-    if (existing) return Response.json(paymentView(existing))
+    if (existing) return checkoutResponse(existing)
 
     env("ABACATE_API_KEY")
     env("ABACATE_WEBHOOK_SECRET")
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     })
     const order = await getOrder(id, access)
     if (!order) throw new CheckoutError("Referência de pedido inválida.", 409)
-    if (!reserved) return Response.json(paymentView(order))
+    if (!reserved) return checkoutResponse(order)
 
     try {
       const charge = await abacate<Charge>("create", {
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
 
     const updated = await getOrder(id, access)
     if (!updated) throw new CheckoutError("Pedido não encontrado.", 404)
-    return Response.json(paymentView(updated))
+    return checkoutResponse(updated)
   } catch (error) {
     return errorResponse(error)
   }

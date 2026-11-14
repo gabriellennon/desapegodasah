@@ -14,6 +14,8 @@ import {
   uuid,
 } from "@/lib/checkout/server"
 
+import { scheduleOrderConfirmation } from "@/lib/orders/server"
+
 // Public HMAC verification key documented by AbacatePay. The private webhook
 // secret is checked separately to authenticate the sender.
 const signatureKey =
@@ -66,6 +68,7 @@ export async function POST(request: Request) {
     const status = paymentStatus(order.method, charge.status)
     if (event.event === "transparent.completed" && status === "paid") {
       await updatePayment(order.id, status, charge)
+      scheduleOrderConfirmation(order.id)
     } else if (
       event.event === "transparent.refunded" &&
       status === "refunded"

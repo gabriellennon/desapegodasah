@@ -52,12 +52,9 @@ export function PaymentResult({
         </p>
         <div className="relative mx-auto grid w-full max-w-xs gap-2.5">
           <Button asChild className="h-11 rounded-sm px-6 text-sm">
-            <Link
-              href={`/pedidos?pedido=${payment.orderNumber}`}
-              onNavigate={clear}
-            >
+            <a href="/pedidos" onClick={clear}>
               Acompanhar meu pedido
-            </Link>
+            </a>
           </Button>
           <Button
             asChild

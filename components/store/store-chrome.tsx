@@ -55,9 +55,9 @@ export function StoreHeader({
           <Link className="py-3" href="/#sobre">
             O desapego
           </Link>
-          <Link className="py-3" href="/pedidos">
+          <a className="py-3" href="/pedidos">
             Meus pedidos
-          </Link>
+          </a>
         </nav>
         <a
           aria-label="Samara Viau no Instagram"

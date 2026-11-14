@@ -172,7 +172,14 @@ Before using production keys, test Pix creation and expiry, approved and decline
 
 If the hydration diff shows `cz-shortcut-listen` on `<body>`, disable the ColorZilla extension for the browser profile you use to test the store and reload the page. You can also use a clean browser profile with extensions disabled. See the [Next.js issue for the injected attribute](https://github.com/vercel/next.js/issues/72031).
 
+## Order tracking
+
+Apply the order tracking and direct lookup migrations to the database that already has checkout tables. Configure `RESEND_API_KEY`, `ORDERS_EMAIL_FROM` with a verified Resend sender, and `ORDERS_PUBLIC_URL` with the store's public HTTPS URL. Set `ORDERS_CONFIRMATION_TEMPLATE_ID` to the published confirmation template. It takes the string variables `ORDER_NUMBER` and `ORDER_URL`. Payment confirmation schedules an email from the checkout or webhook, and the existing checkout reconciliation job retries confirmations for payments approved within the last 23 hours.
+
+The checkout sets a signed, HTTP-only cookie for the latest confirmed order. The confirmation email includes a private link valid for 60 days. The browser remembers the opened order for 30 days. Without the cookie or link, customers can enter their order number and checkout email to see shipping status, carrier and tracking code. Lookup attempts are capped at 10 per order and 20 per client in 15 minutes. The reconciliation job removes expired lookup counters.
+
+The tracking page displays the carrier and code when `tracking_carrier` and `tracking_code` are filled in on `checkout_orders` through the Supabase Table Editor.
+
 ## Planned functionality
 
-- **Order confirmation and tracking.** Send a confirmation email with a secure link so customers can follow a purchase without an account.
 - **Order administration.** Provide a restricted dashboard for paid and pending orders, carriers, and tracking codes. Product entry remains in Supabase Table Editor, and customer support is planned through WhatsApp Business.

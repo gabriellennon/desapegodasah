@@ -5,8 +5,9 @@ import {
   errorResponse,
   getOrder,
   jsonBody,
-  paymentView,
 } from "@/lib/checkout/server"
+
+import { checkoutResponse } from "@/lib/orders/server"
 
 export async function POST(request: Request) {
   try {
@@ -15,13 +16,9 @@ export async function POST(request: Request) {
     if (!order) throw new CheckoutError("Pedido não encontrado.", 404)
     if (order.status === "pending") {
       await refreshPayment(order).catch(() => null)
-      return Response.json(paymentView((await getOrder(id, access)) ?? order), {
-        headers: { "Cache-Control": "no-store" },
-      })
+      return checkoutResponse((await getOrder(id, access)) ?? order)
     }
-    return Response.json(paymentView(order), {
-      headers: { "Cache-Control": "no-store" },
-    })
+    return checkoutResponse(order)
   } catch (error) {
     return errorResponse(error)
   }
