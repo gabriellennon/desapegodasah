@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 import { after, NextResponse } from "next/server"
 import { Resend } from "resend"
 import {
+  DatabaseError,
   database,
   env,
   paymentView,
@@ -117,6 +118,7 @@ type OrderTracking = {
   status: "paid" | "refunded"
   tracking_carrier: string | null
   tracking_code: string | null
+  delivered_at: string | null
 }
 
 type OrderDetails = {
@@ -135,18 +137,27 @@ export async function getRememberedOrder() {
   const fullAccessId = readOrderToken(token, "cookie")
   const id = fullAccessId ?? readOrderToken(token, "lookup")
   if (!id) return null
-  const select = "order_number,status,tracking_carrier,tracking_code"
-  const [order] = await database<(OrderTracking & Partial<OrderDetails>)[]>(
-    "checkout_orders?" +
-      new URLSearchParams({
-        id: "eq." + id,
-        status: "in.(paid,refunded)",
-        select: fullAccessId
-          ? select +
-            ",total_cents,checkout_order_items(product_id,name,size,price_cents)"
-          : select,
-      })
-  )
+  const fields = "order_number,status,tracking_carrier,tracking_code"
+  const details = fullAccessId
+    ? ",total_cents,checkout_order_items(product_id,name,size,price_cents)"
+    : ""
+  const query = new URLSearchParams({
+    id: "eq." + id,
+    status: "in.(paid,refunded)",
+    select: fields + ",delivered_at" + details,
+  })
+  const load = () =>
+    database<(OrderTracking & Partial<OrderDetails>)[]>(
+      "checkout_orders?" + query
+    )
+
+  const [order] = await load().catch(async (error: unknown) => {
+    // Older databases can serve tracking before the delivery migration is applied.
+    if (!(error instanceof DatabaseError) || error.code !== "42703") throw error
+    query.set("select", fields + details)
+    const rows = await load()
+    return rows.map((row) => ({ ...row, delivered_at: null }))
+  })
   return order ?? null
 }
 

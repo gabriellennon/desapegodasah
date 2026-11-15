@@ -22,6 +22,12 @@ export class CheckoutError extends Error {
   }
 }
 
+export class DatabaseError extends CheckoutError {
+  constructor(readonly code: string | undefined) {
+    super("Não foi possível acessar os pedidos. Tente novamente.", 503)
+  }
+}
+
 export function env(name: string) {
   const value = process.env[name]?.trim()
   if (!value) throw new CheckoutError("Checkout indisponível no momento.", 503)
@@ -157,9 +163,8 @@ export async function database<T>(
         409
       )
     }
-    throw new CheckoutError(
-      "Não foi possível acessar os pedidos. Tente novamente.",
-      503
+    throw new DatabaseError(
+      typeof result?.code === "string" ? result.code : undefined
     )
   }
   const result = await response.text()
