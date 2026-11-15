@@ -1,185 +1,90 @@
 # Desapego da Sah
 
-Desapego da Sah is Samara Viau's resale storefront for clothing and accessories from her personal wardrobe. She can share the catalog when a new drop is ready, and shoppers can browse on their phones, inspect each item, and put several pieces in their cart. Most listings represent a single piece. The product model also supports multiple units without displaying the exact quantity to shoppers.
+**Secondhand fashion e-commerce built for Samara Viau by Gabriel Lennon**
 
-The storefront is written in Brazilian Portuguese and displays prices in Brazilian reais (BRL). The storefront includes a live catalog, a browser-based cart, and a guest checkout with AbacatePay and Melhor Envio integrations. Checkout requires the provider configuration described below.
+Desapego da Sah is the online store where Brazilian influencer Samara Viau sells pre-owned clothing and accessories from her personal wardrobe. I built the application for her store, from browsing a new drop to checking out and tracking a delivery. The storefront is designed for mobile shoppers, with a Brazilian Portuguese interface, prices in BRL, and checkout without an account.
 
-## What works today
+**Samara Viau** · [Instagram](https://www.instagram.com/samaraviau/) · [TikTok](https://www.tiktok.com/@eusamaraviau)
 
-- **Catalog** with product photos, names, prices, sizes, and availability. Shoppers can search and filter by category, size, and availability, and sort by price.
-- **Product details** with a shareable URL, condition and description, and a photo gallery. A listing with one photo offers an enlarged view of that photo.
-- **Cart preview** with item removal and a subtotal. The browser stores product IDs and resolves them against the current catalog. Each product can appear once per cart. Sold-out pieces remain browsable, with purchase actions disabled.
-- **Product publishing** through Supabase Table Editor. Drafts stay out of the storefront and published items with zero stock appear as sold out.
-- **Design system** preview at `/design-system`, covering the storefront palette, type, and interface components.
+## Product
 
-**Buy now** opens checkout for a single piece. **Finalize purchase** opens checkout for the cart. The server reserves stock when the shopper submits a payment.
-
-## Technology stack
-
-| Area | Technology |
-| --- | --- |
-| Application | Next.js 16 App Router, React 19, TypeScript 5 |
-| UI | Tailwind CSS 4, shadcn/ui components, Radix UI dialogs, and Lucide icons |
-| Product data | Supabase Postgres and the Supabase Data API |
-| Checkout | AbacatePay API v2 and abacatepay.js, Melhor Envio shipping quotes, ViaCEP address lookup |
-| Images | Next.js Image, local assets, and approved public image URLs |
-| Fonts | Cormorant Garamond, DM Sans, and Castoro, served locally through `next/font` |
-| Tooling | npm, ESLint, Prettier, and TypeScript |
+| Experience       | Capabilities                                                                                                     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Storefront       | Browse drops, search and filter pieces, and inspect photos, sizing, condition, and availability.                 |
+| Guest checkout   | Purchase a single item or a full cart, compare shipping options by postal code, and pay via Pix or credit card.  |
+| Order tracking   | Receive confirmation by email, follow fulfillment milestones, and copy the carrier tracking code when available. |
+| Store operations | Review payment and order details, manage tracking information, and record delivery in a restricted dashboard.    |
 
 ## Architecture
 
+The application uses a **modular monolith** built with the Next.js App Router. The storefront, checkout, post-purchase experience, and dashboard share a single deployment and design system. Commerce modules define the boundaries for catalog reads, checkout orchestration, and order management. PostgreSQL is the source of truth for inventory and order state.
+
 ```mermaid
 flowchart LR
-    Editor["Supabase Table Editor"] --> DB["Postgres · public.products"]
-    DB -->|"Published rows through the Data API"| Source["Next.js server · getCatalog()"]
-    Source --> Catalog["Catalog · /"]
-    Source --> Details["Product details · /pecas/:id"]
-    Details --> Cart["Cart preview · browser storage"]
-    Images["Local assets and approved image hosts"] --> Catalog
-    Images --> Details
+    Shopper["Shopper"] --> Store["Storefront and guest checkout"]
+    Operator["Store operator"] --> Dashboard["Order dashboard"]
+    Store --> App["Next.js application"]
+    Dashboard --> App
+    App -->|Catalog reads and order transactions| DB[("Supabase PostgreSQL")]
+    App -->|Payment requests| Payments["AbacatePay"]
+    Payments -->|Payment events| App
+    App -->|Shipping quotes| Shipping["Melhor Envio"]
+    App -->|Purchase confirmations| Email["Resend"]
 ```
 
-- **Server rendering.** The catalog and product detail routes read from [`lib/catalog-source.ts`](lib/catalog-source.ts). It queries the Data API with the publishable key, reads rows in batches, and maps them to the shared product model. Configured catalog requests use `cache: "no-store"`, so edits can appear on the next server render without a new deployment.
-- **Browser interactions.** Client components handle filters, sorting, gallery navigation, sharing, and the cart. The cart stores product IDs in `localStorage`. The product details route supplies the current published catalog so the cart can resolve names, prices, and availability.
-- **Access control.** The storefront uses the publishable key. PostgreSQL row-level security limits anonymous reads to published products. Column grants expose the generated `sold` flag while keeping exact stock and editing operations private.
-- **Image delivery.** Product rows store URLs for the main photo and gallery. `next/image` serves appropriately sized variants. Remote sources must match the host and path rules in [`next.config.ts`](next.config.ts).
+- **Rendering boundary.** React Server Components fetch the published catalog and render product pages. Client components handle interactive filters, galleries, cart state, and checkout forms. The cart persists product IDs in browser storage and resolves them against the current catalog.
+- **Data access boundary.** Public catalog queries use a paginated read model with row-level access to published listings. Privileged order reads and writes run on the server. PostgreSQL functions encapsulate inventory reservation and payment updates.
+- **Integration boundary.** Route handlers coordinate checkout requests and payment webhooks. Shipping quotes, payment processing, and transactional email are delegated to their respective providers. The application receives a token from the card provider and keeps raw card data out of its storage.
 
-### Routes and directories
+## Engineering decisions
 
-| Path | Responsibility |
-| --- | --- |
-| `app/page.tsx` | Storefront at `/` |
-| `app/pecas/[id]/page.tsx` | Product detail route. Missing or unpublished IDs return a 404 when Supabase is configured. |
-| `app/checkout/page.tsx` | Guest checkout at `/checkout` |
-| `app/api/checkout/` | Shipping quotes, payment creation, status, and reconciliation |
-| `app/api/webhooks/abacatepay/` | Signed payment and refund notifications |
-| `app/design-system/page.tsx` | Visual reference at `/design-system` |
-| `app/globals.css` | Design tokens and shared styles |
-| `components/catalog/` | Catalog layout, filters, and product cards |
-| `components/store/` | Shared storefront header and footer, gallery, cart, and sharing |
-| `components/ui/` | Shared shadcn/ui components |
-| `lib/catalog.ts` | Product type, BRL formatting, and demo fixtures |
-| `lib/catalog-source.ts` | Server-side Supabase catalog reader |
-| `public/` | Local images, fonts, and font licenses |
+| Concern              | Implementation                                                                                                                                                                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Inventory contention | Reserve inventory atomically with order creation and item snapshots. This keeps two concurrent checkout attempts from claiming the same last unit.                                                                                                                 |
+| Pricing integrity    | Verify the shipping quote server-side and revalidate product prices at reservation time. Store monetary amounts as integer centavos for payment calculations.                                                                                                      |
+| Payment consistency  | Correlate provider charges with the order and validate the amount before applying payment updates. Handle asynchronous provider events and reconcile expired pending Pix payments. An ambiguous provider response keeps the reservation in place for confirmation. |
+| Retry behavior       | Reuse an existing order on repeated checkout submissions. Send confirmation emails with an order-scoped idempotency key so retries within the email provider's deduplication window do not send duplicate confirmations.                                           |
+| Order history        | Persist item details, prices, and the selected shipping option as purchase-time snapshots so catalog edits leave previous orders intact.                                                                                                                           |
+| Access control       | Separate public catalog permissions, guest order access, and authenticated administrative operations. Keep integration credentials on the server and store administrator passwords as hashes.                                                                      |
+| Fulfillment          | Keep label purchase and dispatch manual. Recording shipment or delivery in the dashboard updates the customer-facing timeline on the next read.                                                                                                                    |
 
-## Run locally
+## Technology stack
 
-Use **Node.js 20.9 or newer** and npm. From the repository root:
+| Layer                 | Tools                                         |
+| --------------------- | --------------------------------------------- |
+| Application           | Next.js 16, React 19, TypeScript              |
+| UI                    | Tailwind CSS 4, shadcn/ui, Radix UI, Lucide   |
+| Data                  | Supabase PostgreSQL and the Supabase Data API |
+| Payments and shipping | AbacatePay, Melhor Envio, ViaCEP              |
+| Transactional email   | Resend                                        |
+| Tooling               | npm, ESLint, Prettier                         |
+
+The interface combines an Espresso, Peony, and Off-white palette with locally served Cormorant Garamond and DM Sans. The `/design-system` page documents the visual primitives used across the storefront and dashboard.
+
+## Repository map
+
+| Path                    | Responsibility                                                        |
+| ----------------------- | --------------------------------------------------------------------- |
+| `app/`                  | App Router pages, server actions, and HTTP handlers                   |
+| `components/`           | Domain-specific interfaces and shared UI primitives                   |
+| `lib/catalog-source.ts` | Paginated catalog queries and mapping to the storefront product model |
+| `lib/checkout/`         | Checkout validation, provider integration, and payment state          |
+| `lib/orders/`           | Guest order access and confirmation delivery                          |
+| `app/globals.css`       | Design tokens and shared styles                                       |
+
+## Run the storefront demo
+
+Use Node.js 20.9 or later and npm.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Leave both Supabase variables unset to use the demo catalog. Demo products and photos are marked as illustrative in the storefront.
+Open [http://localhost:3000](http://localhost:3000). With Supabase unconfigured, the storefront and product pages run with sample data and require no provider accounts.
 
-### Connect a Supabase project
-
-1. Use a Supabase project with the `public.products` table and access rules described below. For a fresh project, run the SQL in the next section through the Supabase SQL Editor.
-2. Copy [`.env.example`](.env.example) to `.env.local`. Set both variables and restart the development server if it is running.
-
-   ```dotenv
-   SUPABASE_URL=https://your-project-ref.supabase.co
-   SUPABASE_PUBLISHABLE_KEY=sb_publishable_your_key
-   ```
-
-   Use the project's API URL and **publishable** key from the Supabase dashboard. Keep environment files with real values out of version control.
-
-3. Add a product in **Table Editor → products** and set `is_published` to `true` after reviewing it. An empty catalog is expected until at least one row is published.
-4. If product photos are hosted in a different Supabase project or image bucket, add the corresponding public URL pattern to `next.config.ts`.
-
-### Create the catalog table in a fresh project
-
-<details>
-<summary>SQL for the products table and storefront read policy</summary>
-
-```sql
-begin;
-
-create table public.products (
-  id uuid primary key default gen_random_uuid(),
-  name text not null check (btrim(name) <> ''),
-  category text not null check (category in ('Roupas', 'Bolsas', 'Calçados', 'Acessórios')),
-  brand text,
-  size text not null check (btrim(size) <> ''),
-  price_cents integer not null check (price_cents > 0),
-  image_url text not null check (btrim(image_url) <> ''),
-  photo_urls text[] not null default '{}',
-  condition text not null check (btrim(condition) <> ''),
-  description text not null check (btrim(description) <> ''),
-  stock integer not null default 1 check (stock >= 0),
-  sold boolean generated always as (stock = 0) stored,
-  is_published boolean not null default false,
-  created_at timestamptz not null default now()
-);
-
-alter table public.products enable row level security;
-revoke all on public.products from public, anon, authenticated;
-grant select (
-  id, name, category, brand, size, price_cents, image_url, photo_urls,
-  condition, description, sold, created_at
-) on public.products to anon, authenticated;
-
-create policy "Read published products"
-  on public.products for select to anon, authenticated
-  using (is_published);
-
-create index products_published_order_idx
-  on public.products (created_at desc, id)
-  where is_published;
-
-commit;
-```
-
-</details>
-
-### Publish a product
-
-1. Add the product name, category, size, description, and condition. Include measurements and visible wear when relevant.
-2. Enter the price as an integer in centavos. For example, enter `12990` for R$ 129,90. Use `stock = 1` for a one-off piece.
-3. Set `image_url` to the main photo and add any extra photo URLs to `photo_urls` in gallery order. Use a local path under `public/` such as `/images/jacket.jpg`, or an approved public URL.
-4. Set `is_published = true` to show the listing. Set it to `false` to take it out of the catalog. The database derives `sold` from stock.
-
-The [product entry guide](docs/cadastro-de-produtos.md) has worked examples for local photos and Supabase Storage. See the [design notes](docs/design-system.md) for typography, colors, and asset references. Both guides are in Portuguese.
-
-## Commands
-
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the Next.js development server |
-| `npm run lint` | Run ESLint |
+| Command             | Purpose                |
+| ------------------- | ---------------------- |
+| `npm run lint`      | Run ESLint             |
 | `npm run typecheck` | Check TypeScript types |
-| `npm run format` | Format TypeScript and TSX files in place |
-| `npm run build` | Compile a production build |
-| `npm start` | Serve the compiled production build |
-
-For deployment, set both Supabase variables in the hosting environment and use a host that supports the Next.js server runtime. The storefront currently asks search engines to skip indexing through the root metadata in [`app/layout.tsx`](app/layout.tsx). Review that setting when the site is ready to be indexed.
-
-## Checkout setup
-
-1. Apply the SQL migrations in `supabase/migrations`. For a new database, apply them in order. If the catalog table already exists, apply the remaining checkout migrations in order. The order number migration assigns existing orders a unique `DS-XXXX` reference. Fill in `shipping_weight_kg`, `shipping_width_cm`, `shipping_height_cm`, and `shipping_length_cm` for each piece available for shipping.
-2. Configure the checkout variables in [`.env.example`](.env.example). Set `SUPABASE_SERVICE_ROLE_KEY` to a server-side secret or service role key. Generate independent random values for the signing, webhook, and scheduler secrets with `openssl rand -hex 32`. Keep these values on the server.
-3. Configure the AbacatePay API key with `TRANSPARENT:CREATE` and `TRANSPARENT:READ`. Use the matching public checkout key for the embedded card form. Start with Dev Mode credentials and a separate test database. Set `CHECKOUT_MAX_INSTALLMENTS` to the store's limit between 1 and 12. The checkout also applies AbacatePay's R$ 10 minimum per installment.
-4. Configure the Melhor Envio token, the sender's eight-digit postal code, and the application User-Agent with a contact email. Match `MELHOR_ENVIO_SANDBOX` to the token's environment. The server keeps the original quote on the order and caps the shipping charge at R$ 50.
-5. Register the public HTTPS endpoint `/api/webhooks/abacatepay` in AbacatePay for `transparent.completed` and `transparent.refunded`. Use the same secret as `ABACATE_WEBHOOK_SECRET`.
-6. Schedule an authenticated GET to `/api/checkout/reconcile` every few minutes. Send `Authorization: Bearer <CHECKOUT_CRON_SECRET>`. This checks expired Pix charges even after a shopper closes the checkout. Stock is released when the provider confirms expiry or cancellation.
-
-The server signs shipping quotes, validates prices and availability when reserving stock, and stores the order and its items in a single database transaction. Card data goes to the provider's embedded form. The server receives a single-use token and never stores card numbers, CVV, or reusable card tokens. An ambiguous provider response keeps the order reserved for reconciliation. For an order stuck in `creating` or `review`, check AbacatePay before changing its status or returning stock.
-
-Before using production keys, test Pix creation and expiry, approved and declined cards, installments, webhook retries, and the last available unit. Use the provider's test tools to simulate a Pix payment. See [Pix creation](https://docs.abacatepay.com/pages/transparents/create), [card charges](https://docs.abacatepay.com/pages/transparents/card), [webhook security](https://docs.abacatepay.com/pages/notificacoes/seguranca), and [Melhor Envio shipping quotes](https://docs.melhorenvio.com.br/reference/calculo-de-fretes-por-produtos).
-
-### Browser hydration warnings
-
-If the hydration diff shows `cz-shortcut-listen` on `<body>`, disable the ColorZilla extension for the browser profile you use to test the store and reload the page. You can also use a clean browser profile with extensions disabled. See the [Next.js issue for the injected attribute](https://github.com/vercel/next.js/issues/72031).
-
-## Order tracking
-
-Apply the order tracking and direct lookup migrations to the database that already has checkout tables. Configure `RESEND_API_KEY`, `ORDERS_EMAIL_FROM` with a verified Resend sender, and `ORDERS_PUBLIC_URL` with the store's public HTTPS URL. Set `ORDERS_CONFIRMATION_TEMPLATE_ID` to the published confirmation template. It takes the string variables `ORDER_NUMBER` and `ORDER_URL`. Payment confirmation schedules an email from the checkout or webhook, and the existing checkout reconciliation job retries confirmations for payments approved within the last 23 hours.
-
-The checkout sets a signed, HTTP-only cookie for the latest confirmed order. The confirmation email includes a private link valid for 60 days. The browser remembers the opened order for 30 days. Without the cookie or link, customers can enter their order number and checkout email to see shipping status, carrier and tracking code. Lookup attempts are capped at 10 per order and 20 per client in 15 minutes. The reconciliation job removes expired lookup counters.
-
-The tracking page displays the carrier and code when `tracking_carrier` and `tracking_code` are filled in on `checkout_orders` through the Supabase Table Editor.
-
-## Planned functionality
-
-- **Order administration.** Provide a restricted dashboard for paid and pending orders, carriers, and tracking codes. Product entry remains in Supabase Table Editor, and customer support is planned through WhatsApp Business.
+| `npm run build`     | Build for production   |
